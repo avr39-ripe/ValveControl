@@ -1,5 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
+#include <Libraries/OneWire/OneWire.h>
 
 ///////////////////////////////////////////////////////////////////
 // Set your SSID & Pass for initial configuration
@@ -9,11 +10,29 @@
 #include "webserver.h"
 
 Timer procTimer;
+Timer relayTimer;
+
+OneWire ds(ONEWIRE_PIN);
+
 bool web_ap_started = false;
 // Sensors string values
 String StrT, StrRH, StrTime;
-int counter = 0;
+byte n;
+unsigned long counter = 0;
 float curr_temp = 26.07;
+
+struct temp_sensor
+{
+  byte addr[8];
+  char addr_str[17];
+  float value;
+  byte data[12];
+};
+
+temp_sensor temp_sensors[] ={ {{0x28, 0x9D, 0x14, 0x3E, 0x00, 0x00, 0x00, 0xDB},"Sensor1\0",0},
+                              {{0x28, 0xE3, 0x1D, 0x3E, 0x00, 0x00, 0x00, 0xA3},"Sensor2\0",0},
+                              {{0x28, 0x97, 0xDD, 0x3D, 0x00, 0x00, 0x00, 0x4D},"Sensor3\0",0}
+};
 
 void process();
 void connectOk();
@@ -51,53 +70,50 @@ void init()
 
 void process()
 {
-	if(Serial.available() > 0)
-	  {
-		procTimer.stop();
-		char buf[255];
-		int length = Serial.readBytesUntil('\r', buf, 255);
 
-		if ( length > 0)
-	    {
-	    	buf[length]='\0';
-//	    	Serial.print("Serial data: ");
-//	    	Serial.print(buf);
-
-	    	DynamicJsonBuffer jsonBuffer;
-	    	JsonObject& root = jsonBuffer.parseObject(buf);
-	    	if (!root.success())
-	    	{
-//	    	    Serial.print("parseObject() failed");
-	    	}
-	    	else
-	    	{
-//	    		root.printTo(Serial);
-//	    		Serial.println();
-
-	    		if(root["settings"].success())
-	    		{
-					JsonObject& settings = root["settings"];
-					ActiveConfig.set_temp = settings["set_temp"];
-					ActiveConfig.temp_delta = settings["temp_delta"];
-					ActiveConfig.temp_interval = settings["temp_interval"];
-					ActiveConfig.switch_interval = settings["switch_interval"];
-
-					counter++;
-	    		}
-	    		if(root["temperature"].success())
-	    		{
-	    			JsonObject& temperature = root["temperature"];
-	    			curr_temp = temperature["curr_temp"];
-
-	    			counter++;
-	    		}
-	    	}
-
-	    }
-//		Serial.println(counter);
-		procTimer.start();
-	  }
 }
+
+void readTemp()
+{
+	counter++;
+
+	ds.reset();
+	ds.skip();
+	ds.write(0x44); // start conversion
+
+//  system_soft_wdt_stop();
+	delay(750);
+//  system_soft_wdt_restart();
+
+	for (n = 0; n < NUM_SENSORS; n++)
+	{
+
+		if (OneWire::crc8(temp_sensors[n].addr, 7) != temp_sensors[n].addr[7])
+		{
+			Serial.println("CRC is not valid!");
+			temp_sensors[n].value = -1000;
+		}
+
+		ds.reset();
+		ds.select(temp_sensors[n].addr);
+		ds.write(0xBE); // Read Scratchpad
+
+		for (i = 0; i < 9; i++)
+		{
+			temp_sensors[n].data[i] = ds.read();
+		}
+
+		float tempRead = ((temp_sensors[n].data[1] << 8)
+				| temp_sensors[n].data[0]); //using two's compliment
+		temp_sensors[n].value = tempRead / 16;
+
+
+	}
+
+	Serial.println();
+	root.printTo(Serial);
+}
+
 
 void connectOk()
 {

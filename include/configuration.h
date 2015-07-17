@@ -8,14 +8,8 @@
 #define WIFI_SSID "infjust"
 #define WIFI_PWD "jujust12"
 
-// Pin for communication with DHT sensor
-//#define DHT_PIN 1 // UART0 TX pin
-#define DHT_PIN 2
-
-// Pin for trigger control output
-//#define CONTROL_PIN 3 // UART0 RX pin
-#define CONTROL_PIN 0
-
+#define ONEWIRE_PIN 4
+#define NUM_SENSORS 3
 #define VALVE_CONFIG_FILE ".valve.conf" // leading point for security reasons :)
 
 struct ValveConfig

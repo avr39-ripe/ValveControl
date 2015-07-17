@@ -4,6 +4,7 @@
 #include "../include/configuration.h"
 
 bool serverStarted = false;
+byte n;
 HttpServer server;
 extern String StrT, StrRH, StrTime; // Sensors string values
 extern int counter;
@@ -84,15 +85,18 @@ void onFile(HttpRequest &request, HttpResponse &response)
 
 void onAJAXGetTemp(HttpRequest &request, HttpResponse &response)
 {
-	Serial.println("{\"command\":\"get_temp\"}");
-	process();
+	readTemp();
 
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject& json = stream->getRoot();
 	JsonObject& temperature = json.createNestedObject("temperature");
 	json["temperature"] =  temperature;
-	temperature["curr_temp"] = curr_temp;
+//	temperature["curr_temp"] = curr_temp;
 	json["counter"] = counter;
+	for (n = 0; n < NUM_SENSORS; n++)
+	{
+		temperature[temp_sensors[n].addr_str] = temp_sensors[n].value;
+	}
 
 	response.sendJsonObject(stream);
 }
