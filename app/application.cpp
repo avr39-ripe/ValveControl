@@ -7,7 +7,7 @@
 #include "valvecontrol.h"
 #include "webserver.h"
 
-Timer procTimer;
+Timer tempTimer;
 Timer relayTimer;
 
 OneWire ds(ONEWIRE_PIN);
@@ -19,6 +19,7 @@ temp_sensor temp_sensors[] = {{{0x28, 0x9D, 0x14, 0x3E, 0x00, 0x00, 0x00, 0xDB},
 				{{0x28, 0xE3, 0x1D, 0x3E, 0x00, 0x00, 0x00, 0xA3},"Sensor2\0",0},
 				{{0x28, 0x97, 0xDD, 0x3D, 0x00, 0x00, 0x00, 0x4D},"Sensor3\0",0}};
 
+relay_pin relay_pins[NUM_SENSORS] = {{14,0},{15,0},{5,0}};
 
 //void process();
 void connectOk();
@@ -31,6 +32,10 @@ void init()
 	Serial.setTimeout(2000);
 
 	ds.begin();
+	for (byte n = 0; n < NUM_SENSORS; n++ )
+	{
+		pinMode(relay_pins[n].pin, OUTPUT);
+	}
 
 	ActiveConfig = loadConfig();
 //	ActiveConfig.NetworkSSID = WIFI_SSID;
@@ -47,7 +52,8 @@ void init()
 	startWebServer();
 
 
-//	procTimer.initializeMs(5000, process).start();
+	tempTimer.initializeMs(2000, readTemp).start();
+	relayTimer.initializeMs(4000, thermostat).start();
 //	process();
 }
 
@@ -98,6 +104,26 @@ void readTemp()
 
 }
 
+void thermostat()
+{
+	for (byte n = 0; n < NUM_SENSORS; n++ )
+	{
+
+		if (temp_sensors[n].value >= 34 && relay_pins[n].state == 0)
+		{
+			relay_pins[n].state = 1;
+			digitalWrite(relay_pins[n].pin, HIGH);
+//			Serial.println("Hooot!");
+		}
+
+		if (temp_sensors[n].value <= 32 && relay_pins[n].state == 1)
+		{
+			relay_pins[n].state = 0;
+			digitalWrite(relay_pins[n].pin, LOW);
+//			Serial.println("Cooold!");
+		}
+	}
+}
 
 void connectOk()
 {
@@ -109,7 +135,7 @@ void connectOk()
 		WifiAccessPoint.config("ValveConfig", "", AUTH_OPEN);
 		WifiAccessPoint.enable(true);
 		startWebServer();
-		procTimer.restart();
+//		procTimer.restart();
 	}
 //	// At first run we will download web server content
 //	if (!fileExist("index.html") || !fileExist("config.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz"))

@@ -81,7 +81,7 @@ void onFile(HttpRequest &request, HttpResponse &response)
 
 void onAJAXGetTemp(HttpRequest &request, HttpResponse &response)
 {
-	readTemp();
+//	readTemp();
 
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject& json = stream->getRoot();

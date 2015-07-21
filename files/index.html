@@ -25,7 +25,9 @@
 			
 			(function worker() {
 				$.getJSON('/temp', function(data) {
-					$('#temp').html(data.temperature.Sensor1 + ' &deg;C');
+					$('#temp-1-val').html(data.temperature.Sensor1 + ' &deg;C');
+					$('#temp-2-val').html(data.temperature.Sensor2 + ' &deg;C');
+					$('#temp-3-val').html(data.temperature.Sensor3 + ' &deg;C');
 					$('#counter').html(data.counter);
 					setTimeout(worker, 2000);
 				});
@@ -61,13 +63,34 @@
 			<div class="col-xs-10 col-md-5">
 			  <div class="panel panel-default">
 				<div class="panel-heading">
-				  <h3 class="panel-title">Temperature</h3>
+				  <h3 id="temp-1-header" class="panel-title">Temperature Sensor1</h3>
 				</div>
 				<div class="panel-body">
-				  <h1 id="temp" class="text-center main">{Temp} &deg;C</h1>
+				  <h1 id="temp-1-val" class="text-center main">{Temp} &deg;C</h1>
 				</div>
 			  </div>
-			</div><!-- /col -->
+			</div>
+				<div class="col-xs-10 col-md-5">
+			  <div class="panel panel-default">
+				<div class="panel-heading">
+				  <h3 id="temp-2-header" class="panel-title">Temperature Sensor2</h3>
+				</div>
+				<div class="panel-body">
+				  <h1 id="temp-2-val" class="text-center main">{Temp} &deg;C</h1>
+				</div>
+			  </div>
+			</div>
+				<div class="col-xs-10 col-md-5">
+			  <div class="panel panel-default">
+				<div class="panel-heading">
+				  <h3 id="temp-3-header" class="panel-title">Temperature Sensor3</h3>
+				</div>
+				<div class="panel-body">
+				  <h1 id="temp-3-val" class="text-center main">{Temp} &deg;C</h1>
+				</div>
+			  </div>
+			</div>
+			<!-- /col -->
 		</div>
       </div>
 

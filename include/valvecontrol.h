@@ -22,8 +22,15 @@ struct temp_sensor
 
 extern temp_sensor temp_sensors[NUM_SENSORS];
 
+struct relay_pin
+{
+	byte pin;
+	byte state;
+};
 
+extern relay_pin relay_pins[NUM_SENSORS];
 
 #endif /* INCLUDE_VALVECONTROL_H_ */
 
+void thermostat(void);
 void readTemp(void);
