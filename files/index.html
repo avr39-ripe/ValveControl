@@ -25,7 +25,7 @@
 			
 			(function worker() {
 				$.getJSON('/temp', function(data) {
-					$('#temp').html(data.temperature.curr_temp + ' &deg;C');
+					$('#temp').html(data.temperature.Sensor1 + ' &deg;C');
 					$('#counter').html(data.counter);
 					setTimeout(worker, 2000);
 				});

@@ -2,21 +2,17 @@
 #include <SmingCore/SmingCore.h>
 
 #include "../include/configuration.h"
+#include "valvecontrol.h"
 
 bool serverStarted = false;
-byte n;
 HttpServer server;
-extern String StrT, StrRH, StrTime; // Sensors string values
-extern int counter;
-extern float curr_temp;
-extern void process(void);
 
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
 	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
 	auto &vars = tmpl->variables();
 	vars["Time"] = String(counter);
-	vars["Temp"] = String(curr_temp);
+	vars["Temp"] = String(temp_sensors[0].value);
 	response.sendTemplate(tmpl);
 }
 
@@ -93,7 +89,7 @@ void onAJAXGetTemp(HttpRequest &request, HttpResponse &response)
 	json["temperature"] =  temperature;
 //	temperature["curr_temp"] = curr_temp;
 	json["counter"] = counter;
-	for (n = 0; n < NUM_SENSORS; n++)
+	for (byte n = 0; n < NUM_SENSORS; n++)
 	{
 		temperature[temp_sensors[n].addr_str] = temp_sensors[n].value;
 	}

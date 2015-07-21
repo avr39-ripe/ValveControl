@@ -9,7 +9,7 @@
 #define WIFI_PWD "jujust12"
 
 #define ONEWIRE_PIN 4
-#define NUM_SENSORS 3
+
 #define VALVE_CONFIG_FILE ".valve.conf" // leading point for security reasons :)
 
 struct ValveConfig

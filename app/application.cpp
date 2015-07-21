@@ -2,11 +2,9 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/OneWire/OneWire.h>
 
-///////////////////////////////////////////////////////////////////
-// Set your SSID & Pass for initial configuration
 #include "../include/configuration.h" // application configuration
-///////////////////////////////////////////////////////////////////
 
+#include "valvecontrol.h"
 #include "webserver.h"
 
 Timer procTimer;
@@ -15,39 +13,24 @@ Timer relayTimer;
 OneWire ds(ONEWIRE_PIN);
 
 bool web_ap_started = false;
-// Sensors string values
-String StrT, StrRH, StrTime;
-byte n;
+
 unsigned long counter = 0;
-float curr_temp = 26.07;
+temp_sensor temp_sensors[] = {{{0x28, 0x9D, 0x14, 0x3E, 0x00, 0x00, 0x00, 0xDB},"Sensor1\0",0},
+				{{0x28, 0xE3, 0x1D, 0x3E, 0x00, 0x00, 0x00, 0xA3},"Sensor2\0",0},
+				{{0x28, 0x97, 0xDD, 0x3D, 0x00, 0x00, 0x00, 0x4D},"Sensor3\0",0}};
 
-struct temp_sensor
-{
-  byte addr[8];
-  char addr_str[17];
-  float value;
-  byte data[12];
-};
 
-temp_sensor temp_sensors[] ={ {{0x28, 0x9D, 0x14, 0x3E, 0x00, 0x00, 0x00, 0xDB},"Sensor1\0",0},
-                              {{0x28, 0xE3, 0x1D, 0x3E, 0x00, 0x00, 0x00, 0xA3},"Sensor2\0",0},
-                              {{0x28, 0x97, 0xDD, 0x3D, 0x00, 0x00, 0x00, 0x4D},"Sensor3\0",0}
-};
-
-void process();
+//void process();
 void connectOk();
 void connectFail();
-
-//extern "C" void user_rf_pre_init(void)
-//{
-//}
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-//	Serial.begin(9600); // 115200 by default
 	Serial.systemDebugOutput(false); // Debug output to serial
 	Serial.setTimeout(2000);
+
+	ds.begin();
 
 	ActiveConfig = loadConfig();
 //	ActiveConfig.NetworkSSID = WIFI_SSID;
@@ -64,8 +47,8 @@ void init()
 	startWebServer();
 
 
-	procTimer.initializeMs(5000, process).start();
-	process();
+//	procTimer.initializeMs(5000, process).start();
+//	process();
 }
 
 void process()
@@ -85,7 +68,7 @@ void readTemp()
 	delay(750);
 //  system_soft_wdt_restart();
 
-	for (n = 0; n < NUM_SENSORS; n++)
+	for (byte n = 0; n < NUM_SENSORS; n++)
 	{
 
 		if (OneWire::crc8(temp_sensors[n].addr, 7) != temp_sensors[n].addr[7])
@@ -98,7 +81,7 @@ void readTemp()
 		ds.select(temp_sensors[n].addr);
 		ds.write(0xBE); // Read Scratchpad
 
-		for (i = 0; i < 9; i++)
+		for (byte i = 0; i < 9; i++)
 		{
 			temp_sensors[n].data[i] = ds.read();
 		}
@@ -110,8 +93,9 @@ void readTemp()
 
 	}
 
-	Serial.println();
-	root.printTo(Serial);
+//	Serial.println();
+//	root.printTo(Serial);
+
 }
 
 
