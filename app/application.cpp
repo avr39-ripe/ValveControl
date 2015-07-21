@@ -133,10 +133,11 @@ void connectOk()
 	{
 		web_ap_started = true;
 		WifiAccessPoint.config("ValveConfig", "", AUTH_OPEN);
-		WifiAccessPoint.enable(true);
-		startWebServer();
+		WifiAccessPoint.enable(false);
+//		startWebServer();
 //		procTimer.restart();
 	}
+
 //	// At first run we will download web server content
 //	if (!fileExist("index.html") || !fileExist("config.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz"))
 //	{
