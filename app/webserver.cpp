@@ -79,7 +79,7 @@ void onFile(HttpRequest &request, HttpResponse &response)
 	}
 }
 
-void onAJAXGetTemp(HttpRequest &request, HttpResponse &response)
+void onAJAXGetState(HttpRequest &request, HttpResponse &response)
 {
 //	readTemp();
 
@@ -117,7 +117,7 @@ void startWebServer()
 	server.listen(80);
 	server.addPath("/", onIndex);
 	server.addPath("/config", onConfiguration);
-	server.addPath("/temp", onAJAXGetTemp);
+	server.addPath("/state", onAJAXGetState);
 	server.addPath("/ard_conf", onAJAXGetArdConf);
 	server.setDefaultHandler(onFile);
 	serverStarted = true;

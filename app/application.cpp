@@ -8,6 +8,7 @@
 #include "webserver.h"
 
 Timer tempTimer;
+Timer read_tempTimer;
 Timer relayTimer;
 
 OneWire ds(ONEWIRE_PIN);
@@ -52,7 +53,7 @@ void init()
 	startWebServer();
 
 
-	tempTimer.initializeMs(2000, readTemp).start();
+	tempTimer.initializeMs(2000, startTemp).start();
 	relayTimer.initializeMs(4000, thermostat).start();
 //	process();
 }
@@ -62,16 +63,27 @@ void process()
 
 }
 
+void startTemp() //Start temperature conversion on all sensors
+{
+	if (! read_tempTimer.isStarted())
+	{
+		ds.reset();
+		ds.skip();
+		ds.write(0x44); // start conversion
+
+		read_tempTimer.initializeMs(750, readTemp).start(false);
+	}
+}
 void readTemp()
 {
 	counter++;
 
-	ds.reset();
-	ds.skip();
-	ds.write(0x44); // start conversion
+//	ds.reset();
+//	ds.skip();
+//	ds.write(0x44); // start conversion
 
 //  system_soft_wdt_stop();
-	delay(750);
+//	delay(750);
 //  system_soft_wdt_restart();
 
 	for (byte n = 0; n < NUM_SENSORS; n++)
@@ -98,7 +110,7 @@ void readTemp()
 
 
 	}
-
+	read_tempTimer.stop();
 //	Serial.println();
 //	root.printTo(Serial);
 

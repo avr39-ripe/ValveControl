@@ -33,4 +33,5 @@ extern relay_pin relay_pins[NUM_SENSORS];
 #endif /* INCLUDE_VALVECONTROL_H_ */
 
 void thermostat(void);
+void startTemp();
 void readTemp(void);
