@@ -25,9 +25,9 @@
 			
 			(function worker() {
 				$.getJSON('/state', function(data) {
-					$('#temp-1-val').html(data.temperature.Sensor1 + ' &deg;C');
-					$('#temp-2-val').html(data.temperature.Sensor2 + ' &deg;C');
-					$('#temp-3-val').html(data.temperature.Sensor3 + ' &deg;C');
+					$('#temp-1-val').html(data.sensors[0].temp + ' &deg;C');
+					$('#temp-2-val').html(data.sensors[1].temp + ' &deg;C');
+					$('#temp-3-val').html(data.sensors[2].temp + ' &deg;C');
 					$('#counter').html(data.counter);
 					setTimeout(worker, 2000);
 				});

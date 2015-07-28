@@ -85,13 +85,16 @@ void onAJAXGetState(HttpRequest &request, HttpResponse &response)
 
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject& json = stream->getRoot();
-	JsonObject& temperature = json.createNestedObject("temperature");
-	json["temperature"] =  temperature;
+	JsonArray& sensors = json.createNestedArray("sensors");
+//	json["sensors"] =  temperature;
 //	temperature["curr_temp"] = curr_temp;
 	json["counter"] = counter;
 	for (byte n = 0; n < NUM_SENSORS; n++)
 	{
-		temperature[temp_sensors[n].addr_str] = temp_sensors[n].value;
+		JsonObject& sensor = sensors.createNestedObject();
+		sensor["name"] = temp_sensors[n].addr_str;
+		sensor["temp"] = temp_sensors[n].value;
+		sensor["state"] = relay_pins[n].state;
 	}
 
 	response.sendJsonObject(stream);
