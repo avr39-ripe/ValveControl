@@ -30,6 +30,7 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(false); // Debug output to serial
+	Serial.commandProcessing(false);
 	Serial.setTimeout(2000);
 
 	ds.begin();
