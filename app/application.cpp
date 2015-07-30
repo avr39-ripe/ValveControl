@@ -59,10 +59,6 @@ void init()
 //	process();
 }
 
-void process()
-{
-
-}
 
 void startTemp() //Start temperature conversion on all sensors
 {
@@ -122,18 +118,16 @@ void thermostat()
 	for (byte n = 0; n < NUM_SENSORS; n++ )
 	{
 
-		if (temp_sensors[n].value >= 34 && relay_pins[n].state == 0)
+		if (temp_sensors[n].value >= ActiveConfig.set_temp + ActiveConfig.temp_delta && relay_pins[n].state == 0)
 		{
 			relay_pins[n].state = 1;
 			digitalWrite(relay_pins[n].pin, HIGH);
-//			Serial.println("Hooot!");
 		}
 
-		if (temp_sensors[n].value <= 32 && relay_pins[n].state == 1)
+		if (temp_sensors[n].value <= ActiveConfig.set_temp - ActiveConfig.temp_delta && relay_pins[n].state == 1)
 		{
 			relay_pins[n].state = 0;
 			digitalWrite(relay_pins[n].pin, LOW);
-//			Serial.println("Cooold!");
 		}
 	}
 }

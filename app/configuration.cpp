@@ -29,8 +29,13 @@ ValveConfig loadConfig()
 	}
 	else
 	{
+		//Factory defaults if no config file present
 		cfg.NetworkSSID = WIFI_SSID;
 		cfg.NetworkPassword = WIFI_PWD;
+		cfg.set_temp = 20;
+		cfg.temp_delta = 0.5;
+		cfg.temp_interval = 20;
+		cfg.switch_interval = 3;
 	}
 	return cfg;
 }
